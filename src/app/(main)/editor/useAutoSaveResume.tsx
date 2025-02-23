@@ -8,12 +8,13 @@ import { useEffect, useState } from "react";
 import { saveResume } from "./actions";
 
 export default function useAutoSaveResume(resumeData: ResumeValues) {
+  
   const searchParams = useSearchParams();
 
   const { toast } = useToast();
 
   const debouncedResumeData = useDebounce(resumeData, 1500);
-
+  
   const [resumeId, setResumeId] = useState(resumeData.id);
 
   const [lastSavedData, setLastSavedData] = useState(
@@ -86,7 +87,7 @@ export default function useAutoSaveResume(resumeData: ResumeValues) {
       JSON.stringify(debouncedResumeData, fileReplacer),
     );
     console.log("lastSavedData", JSON.stringify(lastSavedData, fileReplacer));
-
+  
     const hasUnsavedChanges =
       JSON.stringify(debouncedResumeData, fileReplacer) !==
       JSON.stringify(lastSavedData, fileReplacer);

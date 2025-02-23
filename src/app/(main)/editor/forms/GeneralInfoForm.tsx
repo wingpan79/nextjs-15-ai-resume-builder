@@ -13,6 +13,7 @@ import { generalInfoSchema, GeneralInfoValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { Textarea } from "@/components/ui/textarea"
 
 export default function GeneralInfoForm({
   resumeData,
@@ -23,9 +24,12 @@ export default function GeneralInfoForm({
     defaultValues: {
       title: resumeData.title || "",
       description: resumeData.description || "",
+      company: resumeData.company || "",
+      position: resumeData.position || "",
+      jobdesc: resumeData.jobdesc || "",
     },
   });
-
+  console.log("Initial resumeData:", resumeData);
   useEffect(() => {
     const { unsubscribe } = form.watch(async (values) => {
       const isValid = await form.trigger();
@@ -74,8 +78,54 @@ export default function GeneralInfoForm({
               </FormItem>
             )}
           />
+        <FormField
+            control={form.control}
+            name="company"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Applying Company</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="ABC Company" />
+                </FormControl>
+                <FormDescription>
+                    The Company you are applying for
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="position"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Applying Position</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Software Developer" />
+                </FormControl>
+                <FormDescription>
+                    The Position you are applying for
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField 
+            control={form.control}
+            name="jobdesc"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Job requirement</FormLabel>
+                <FormControl>
+                  <Textarea {...field} placeholder="Writing and maintaining clean, efficient vanilla PHP code for our web applications, APIs, and cloud services.&#10;" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </form>
       </Form>
+      
     </div>
   );
 }

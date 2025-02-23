@@ -8,10 +8,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url  	    = env("DATABASE_URL")
 }
 
 model Resume {
@@ -20,7 +20,6 @@ model Resume {
 
   title       String?
   description String?
-
   photoUrl    String?
   colorHex    String  @default("#000000")
   borderStyle String  @default("squircle")
@@ -32,6 +31,9 @@ model Resume {
   country     String?
   phone       String?
   email       String?
+  company     String?
+  position    String?
+  jobdesc     String?
 
   workExperiences WorkExperience[]
   educations      Education[]

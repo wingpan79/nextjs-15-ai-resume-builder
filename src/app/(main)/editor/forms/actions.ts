@@ -1,8 +1,9 @@
 "use server";
 
-import openai from "@/lib/openai";
+//import openai from "@/lib/openai";
 import { canUseAITools } from "@/lib/permissions";
 import { getUserSubscriptionLevel } from "@/lib/subscription";
+import model from "@/lib/gemini";
 import {
   GenerateSummaryInput,
   generateSummarySchema,
@@ -31,9 +32,6 @@ export async function generateSummary(input: GenerateSummaryInput) {
   const systemMessage = `
     You are a job resume generator AI. Your task is to write a professional introduction summary for a resume given the user's provided data.
     Only return the summary and do not include any other information in the response. Keep it concise and professional.
-    `;
-
-  const userMessage = `
     Please generate a professional resume summary from this data:
 
     Job title: ${jobTitle || "N/A"}
@@ -58,29 +56,15 @@ export async function generateSummary(input: GenerateSummaryInput) {
         `,
       )
       .join("\n\n")}
-
       Skills:
       ${skills}
     `;
-
   console.log("systemMessage", systemMessage);
-  console.log("userMessage", userMessage);
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: systemMessage,
-      },
-      {
-        role: "user",
-        content: userMessage,
-      },
-    ],
-  });
+  const completion = await model.generateContent(systemMessage);
 
-  const aiResponse = completion.choices[0].message.content;
+
+  const aiResponse = completion.response.text();
 
   if (!aiResponse) {
     throw new Error("Failed to generate AI response");
@@ -115,34 +99,18 @@ export async function generateWorkExperience(
   Start date: <format: YYYY-MM-DD> (only if provided)
   End date: <format: YYYY-MM-DD> (only if provided)
   Description: <an optimized description in bullet format, might be inferred from the job title>
-  `;
-
-  const userMessage = `
   Please provide a work experience entry from this description:
   ${description}
   `;
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: systemMessage,
-      },
-      {
-        role: "user",
-        content: userMessage,
-      },
-    ],
-  });
+  const completion = await model.generateContent(systemMessage);
 
-  const aiResponse = completion.choices[0].message.content;
+
+  const aiResponse = completion.response.text();
 
   if (!aiResponse) {
     throw new Error("Failed to generate AI response");
   }
-
-  console.log("aiResponse", aiResponse);
 
   return {
     position: aiResponse.match(/Job title: (.*)/)?.[1] || "",

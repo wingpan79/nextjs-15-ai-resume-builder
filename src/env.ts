@@ -14,6 +14,8 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string().min(1),
     BLOB_READ_WRITE_TOKEN: z.string().min(1),
     OPENAI_API_KEY: z.string().min(1),
+    DEEPSEEK_API_KEY: z.string().min(1),
+    GEMINI_API_KEY: z.string().min(1),
     STRIPE_SECRET_KEY: z.string().min(1),
     STRIPE_WEBHOOK_SECRET: z.string().min(1),
   },
