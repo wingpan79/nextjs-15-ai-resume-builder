@@ -22,7 +22,6 @@ export default function ResumeEditor({ resumeToEdit }: ResumeEditorProps) {
   const [resumeData, setResumeData] = useState<ResumeValues>(
     resumeToEdit ? mapToResumeValues(resumeToEdit) : {},
   );
-
   const [showSmResumePreview, setShowSmResumePreview] = useState(false);
 
   const { isSaving, hasUnsavedChanges } = useAutoSaveResume(resumeData);
