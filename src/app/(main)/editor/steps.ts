@@ -4,6 +4,7 @@ import GeneralInfoForm from "./forms/GeneralInfoForm";
 import PersonalInfoForm from "./forms/PersonalInfoForm";
 import SkillsForm from "./forms/SkillsForm";
 import SummaryForm from "./forms/SummaryForm";
+import TailorForm from "./forms/TailorForm";
 import WorkExperienceForm from "./forms/WorkExperienceForm";
 
 export const steps: {
@@ -24,5 +25,10 @@ export const steps: {
     title: "Summary",
     component: SummaryForm,
     key: "summary",
+  },
+  {
+    title: "Tailor",
+    component: TailorForm,
+    key: "tailor",
   },
 ];

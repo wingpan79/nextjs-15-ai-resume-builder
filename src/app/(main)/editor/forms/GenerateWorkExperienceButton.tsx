@@ -16,64 +16,98 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 import usePremiumModal from "@/hooks/usePremiumModal";
 import { canUseAITools } from "@/lib/permissions";
 import {
   GenerateWorkExperienceInput,
   generateWorkExperienceSchema,
   WorkExperience,
+  type GeneralInfoValues,
 } from "@/lib/validation";
+import { ResumeValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { WandSparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSubscriptionLevel } from "../../SubscriptionLevelProvider";
-import { generateWorkExperience } from "./actions";
+import { generateSummary, generateWorkExperience } from "./actions";
 
 interface GenerateWorkExperienceButtonProps {
-  onWorkExperienceGenerated: (workExperience: WorkExperience) => void;
+  general_info: GeneralInfoValues;
+  workExperiences: WorkExperience[];
+  index: number;
+  onWorkExperienceGenerated: (description: string) => void;
 }
 
 export default function GenerateWorkExperienceButton({
+  general_info,
+  workExperiences,
+  index,
   onWorkExperienceGenerated,
 }: GenerateWorkExperienceButtonProps) {
   const subscriptionLevel = useSubscriptionLevel();
+  const [loading, setLoading] = useState(false);
 
   const premiumModal = usePremiumModal();
 
-  const [showInputDialog, setShowInputDialog] = useState(false);
 
+  async function handleClick() {
+  
+    if (!canUseAITools(subscriptionLevel)) {
+      premiumModal.setOpen(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      
+      const aiResponse = await generateWorkExperience(general_info,workExperiences[index]);
+      console.log(aiResponse);
+     
+      onWorkExperienceGenerated(aiResponse);
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  //const [showInputDialog, setShowInputDialog] = useState(false);
   return (
     <>
-      <Button
-        variant="outline"
-        type="button"
-        onClick={() => {
-          if (!canUseAITools(subscriptionLevel)) {
-            premiumModal.setOpen(true);
-            return;
-          }
-          setShowInputDialog(true);
-        }}
-      >
-        <WandSparklesIcon className="size-4" />
-        Smart fill (AI)
-      </Button>
+      <LoadingButton
+      variant="outline"
+      type="button"
+      onClick={handleClick}
+      loading={loading}
+    >
+      <WandSparklesIcon className="size-4" />
+      Generate (AI)
+    </LoadingButton>
+      {/*
       <InputDialog
         open={showInputDialog}
         onOpenChange={setShowInputDialog}
+        resumeData={resumeData}
         onWorkExperienceGenerated={(workExperience) => {
           onWorkExperienceGenerated(workExperience);
           setShowInputDialog(false);
         }}
-      />
+      />*/}
     </>
   );
 }
 
 interface InputDialogProps {
   open: boolean;
+  resumeData: ResumeValues;
   onOpenChange: (open: boolean) => void;
   onWorkExperienceGenerated: (workExperience: WorkExperience) => void;
 }
@@ -81,6 +115,7 @@ interface InputDialogProps {
 function InputDialog({
   open,
   onOpenChange,
+  resumeData,
   onWorkExperienceGenerated,
 }: InputDialogProps) {
   const { toast } = useToast();
@@ -88,12 +123,14 @@ function InputDialog({
   const form = useForm<GenerateWorkExperienceInput>({
     resolver: zodResolver(generateWorkExperienceSchema),
     defaultValues: {
+      
       description: "",
     },
   });
 
   async function onSubmit(input: GenerateWorkExperienceInput) {
     try {
+      
       const response = await generateWorkExperience(input);
       onWorkExperienceGenerated(response);
     } catch (error) {

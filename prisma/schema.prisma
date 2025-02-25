@@ -8,10 +8,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model Resume {
@@ -38,11 +38,30 @@ model Resume {
   workExperiences WorkExperience[]
   educations      Education[]
   skills          String[]
-
+  resumeReview    ResumeReview?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("resumes")
+}
+ 
+model ResumeReview {
+  id String @id @default(cuid())
+
+  overallAssessment String?
+  atsScore Int @default(0)
+  strengths String?
+  areasForImprovement String?
+  recommendations String?
+  rationale String?
+
+  resumeId String @unique
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("resume_reviews")
 }
 
 model WorkExperience {

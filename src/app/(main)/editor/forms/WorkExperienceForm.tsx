@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { EditorFormProps } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { workExperienceSchema, WorkExperienceValues } from "@/lib/validation";
+import { type GeneralInfoValues, workExperienceSchema, WorkExperienceValues } from "@/lib/validation";
 import {
   closestCenter,
   DndContext,
@@ -47,6 +47,13 @@ export default function WorkExperienceForm({
       workExperiences: resumeData.workExperiences || [],
     },
   });
+  const general_info: GeneralInfoValues = {
+    title: resumeData.title || "Untitled",  // Provide default values
+    description: resumeData.description || "No description provided",  // Required field
+    company: resumeData.company || "",
+    position: resumeData.position || "",
+    jobdesc: resumeData.jobdesc || ""
+  };
 
   useEffect(() => {
     const { unsubscribe } = form.watch(async (values) => {
@@ -92,6 +99,7 @@ export default function WorkExperienceForm({
           Add as many work experiences as you like.
         </p>
       </div>
+      
       <Form {...form}>
         <form className="space-y-3">
           <DndContext
@@ -111,6 +119,7 @@ export default function WorkExperienceForm({
                   index={index}
                   form={form}
                   remove={remove}
+                  general_info={general_info}
                 />
               ))}
             </SortableContext>
@@ -141,6 +150,7 @@ interface WorkExperienceItemProps {
   id: string;
   form: UseFormReturn<WorkExperienceValues>;
   index: number;
+  general_info:GeneralInfoValues;
   remove: (index: number) => void;
 }
 
@@ -149,6 +159,7 @@ function WorkExperienceItem({
   form,
   index,
   remove,
+  general_info,
 }: WorkExperienceItemProps) {
   const {
     attributes,
@@ -171,6 +182,7 @@ function WorkExperienceItem({
         transition,
       }}
     >
+      
       <div className="flex justify-between gap-2">
         <span className="font-semibold">Work experience {index + 1}</span>
         <GripHorizontal
@@ -181,8 +193,11 @@ function WorkExperienceItem({
       </div>
       <div className="flex justify-center">
         <GenerateWorkExperienceButton
-          onWorkExperienceGenerated={(exp) =>
-            form.setValue(`workExperiences.${index}`, exp)
+          general_info={general_info}
+          workExperiences={form.getValues().workExperiences ?? []}
+          index={index}
+          onWorkExperienceGenerated={(description) =>
+            form.setValue(`workExperiences.${index}.description`, description)
           }
         />
       </div>

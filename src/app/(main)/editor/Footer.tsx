@@ -38,13 +38,13 @@ export default function Footer({
             }
             disabled={!previousStep}
           >
-            Previous step
+            Previous step {previousStep}
           </Button>
           <Button
             onClick={nextStep ? () => setCurrentStep(nextStep) : undefined}
             disabled={!nextStep}
           >
-            Next step
+            Next step {nextStep}
           </Button>
         </div>
         <Button

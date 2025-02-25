@@ -13,9 +13,10 @@ export async function saveResume(values: ResumeValues) {
 
   console.log("received values", values);
 
-  const { photo, workExperiences, educations, ...resumeValues } =
+  const { photo, workExperiences, educations, resumeReview, ...resumeValues } =
     resumeSchema.parse(values);
 
+  
   const { userId } = await auth();
 
   if (!userId) {
@@ -73,7 +74,7 @@ export async function saveResume(values: ResumeValues) {
  
   if (id) {
     return prisma.resume.update({
-      where: { id },
+      where: { id: id },
       data: {
         ...resumeValues,
         photoUrl: newPhotoUrl,
@@ -92,6 +93,28 @@ export async function saveResume(values: ResumeValues) {
             startDate: edu.startDate ? new Date(edu.startDate) : undefined,
             endDate: edu.endDate ? new Date(edu.endDate) : undefined,
           })),
+        },
+        resumeReview: {
+          upsert: {
+            // Used when no record exists - creates new record
+            create: {
+              atsScore: resumeReview?.atsScore ?? 0,
+              overallAssessment: resumeReview?.overallAssessment,
+              strengths: resumeReview?.strengths,
+              areasForImprovement: resumeReview?.areasForImprovement,
+              recommendations: resumeReview?.recommendations,
+              rationale: resumeReview?.rationale,
+            },
+            // Used when record exists - updates existing record
+            update: {
+              atsScore: resumeReview?.atsScore ?? 0,
+              overallAssessment: resumeReview?.overallAssessment,
+              strengths: resumeReview?.strengths,
+              areasForImprovement: resumeReview?.areasForImprovement,
+              recommendations: resumeReview?.recommendations,
+              rationale: resumeReview?.rationale,
+            }
+          },
         },
         updatedAt: new Date(),
       },
@@ -115,6 +138,16 @@ export async function saveResume(values: ResumeValues) {
             startDate: edu.startDate ? new Date(edu.startDate) : undefined,
             endDate: edu.endDate ? new Date(edu.endDate) : undefined,
           })),
+        },
+        resumeReview: {
+          create: resumeReview ? {
+            atsScore: resumeReview?.atsScore ?? 0,
+            overallAssessment: resumeReview?.overallAssessment || undefined,
+            strengths: resumeReview?.strengths || undefined,
+            areasForImprovement: resumeReview?.areasForImprovement || undefined,
+            recommendations: resumeReview?.recommendations || undefined,
+            rationale: resumeReview?.rationale || undefined
+          } : undefined,
         },
       },
     });

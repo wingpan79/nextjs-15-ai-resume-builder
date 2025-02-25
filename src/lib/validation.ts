@@ -79,8 +79,22 @@ export type SkillsValues = z.infer<typeof skillsSchema>;
 export const summarySchema = z.object({
   summary: optionalString,
 });
-
 export type SummaryValues = z.infer<typeof summarySchema>;
+
+export const resumeReviewSchema = z.object({
+  resumeReview: z.object({
+    overallAssessment: optionalString,
+    atsScore: z.number().min(0).max(100),
+    strengths: optionalString,
+    areasForImprovement: optionalString,
+    recommendations: optionalString,
+    rationale: optionalString,
+  }).optional(),
+});
+
+export type ResumeReviewValues = z.infer<typeof resumeReviewSchema>;
+
+
 
 export const resumeSchema = z.object({
   ...generalInfoSchema.shape,
@@ -89,6 +103,7 @@ export const resumeSchema = z.object({
   ...educationSchema.shape,
   ...skillsSchema.shape,
   ...summarySchema.shape,
+  ...resumeReviewSchema.shape,
   colorHex: optionalString,
   borderStyle: optionalString,
 });
@@ -99,11 +114,12 @@ export type ResumeValues = Omit<z.infer<typeof resumeSchema>, "photo"> & {
 };
 
 export const generateWorkExperienceSchema = z.object({
+  company: optionalString,
+  position: optionalString,
+  jobdesc: optionalString,
   description: z
     .string()
     .trim()
-    .min(1, "Required")
-    .min(20, "Must be at least 20 characters"),
 });
 
 export type GenerateWorkExperienceInput = z.infer<
@@ -112,9 +128,40 @@ export type GenerateWorkExperienceInput = z.infer<
 
 export const generateSummarySchema = z.object({
   jobTitle: optionalString,
+  company: optionalString,
+  position: optionalString,
+  jobdesc: optionalString,
   ...workExperienceSchema.shape,
   ...educationSchema.shape,
   ...skillsSchema.shape,
 });
 
 export type GenerateSummaryInput = z.infer<typeof generateSummarySchema>;
+
+export const generateReviewSchema = z.object({
+
+  jobTitle: optionalString,
+  company: optionalString,
+  position: optionalString,
+  jobdesc: optionalString,
+  ...workExperienceSchema.shape,
+  ...educationSchema.shape,
+  ...skillsSchema.shape,
+});
+
+export type GenerateReviewInput = z.infer<typeof generateReviewSchema>;
+
+export const tailorSchema = z.object({ 
+  resumeReview: z.object({
+    overallAssessment: optionalString,
+    atsScore: z.number().min(0).max(100),
+    strengths: optionalString,
+    areasForImprovement: optionalString,
+    recommendations: optionalString,
+    rationale: optionalString,
+  }).optional(),
+});
+
+export type TailorValues = z.infer<typeof tailorSchema>;
+
+

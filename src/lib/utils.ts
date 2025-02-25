@@ -47,6 +47,21 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
       startDate: edu.startDate?.toISOString().split("T")[0],
       endDate: edu.endDate?.toISOString().split("T")[0],
     })),
+    resumeReview: data.resumeReview ? {
+      atsScore: data.resumeReview.atsScore ?? 0,
+      overallAssessment: data.resumeReview.overallAssessment || undefined,
+      strengths: data.resumeReview.strengths || undefined,
+      areasForImprovement: data.resumeReview.areasForImprovement || undefined,
+      recommendations: data.resumeReview.recommendations || undefined,
+      rationale: data.resumeReview.rationale || undefined
+    } : {
+      atsScore: 0,
+      overallAssessment: undefined,
+      strengths: undefined,
+      areasForImprovement: undefined,
+      recommendations: undefined,
+      rationale: undefined
+    },
     skills: data.skills,
     borderStyle: data.borderStyle,
     colorHex: data.colorHex,
